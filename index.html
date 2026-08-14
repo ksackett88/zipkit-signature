@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Email Signature Builder — Zip Kit Homes &amp; Mountain Valley Prefab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#3D3D3D;
+    --char:#585858;
+    --orange:#F88828;
+    --cream:#FBF7F1;
+    --line:#E4DED6;
+    --muted:#9A948E;
+    --white:#fff;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Poppins','Segoe UI',Arial,sans-serif;
+    color:var(--ink);
+    background:var(--cream);
+    -webkit-font-smoothing:antialiased;
+  }
+  header{
+    padding:26px 32px 22px;
+    background:var(--white);
+    border-bottom:1px solid var(--line);
+  }
+  header h1{margin:0;font-size:19px;font-weight:600;letter-spacing:-.01em;}
+  header p{margin:5px 0 0;font-size:13px;color:var(--muted);}
+  .wrap{
+    display:grid;
+    grid-template-columns:390px 1fr;
+    gap:0;
+    align-items:start;
+    min-height:calc(100vh - 90px);
+  }
+  .panel{
+    padding:26px 28px 60px;
+    border-right:1px solid var(--line);
+    background:var(--white);
+  }
+  .stage{padding:26px 32px 60px;}
+
+  .group{margin-bottom:24px;}
+  .group > h2{
+    margin:0 0 12px;
+    font-size:10.5px;
+    font-weight:600;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--muted);
+  }
+  label{display:block;margin-bottom:12px;}
+  label > span{
+    display:block;
+    font-size:12px;
+    font-weight:500;
+    margin-bottom:5px;
+    color:var(--char);
+  }
+  input[type=text], input[type=url], input[type=number], select{
+    width:100%;
+    padding:9px 11px;
+    font-family:inherit;
+    font-size:13px;
+    color:var(--ink);
+    border:1px solid var(--line);
+    border-radius:5px;
+    background:var(--white);
+    transition:border-color .15s;
+  }
+  input:focus, select:focus{
+    outline:2px solid rgba(248,136,40,.35);
+    outline-offset:1px;
+    border-color:var(--orange);
+  }
+  .hint{font-size:11px;color:var(--muted);margin:-7px 0 12px;line-height:1.45;}
+  .row2{display:grid;grid-template-columns:1fr 96px;gap:10px;align-items:end;}
+  .row2 label{margin-bottom:12px;}
+
+  .segmented{display:flex;gap:6px;margin-bottom:14px;}
+  .segmented button{
+    flex:1;
+    padding:9px 6px;
+    font-family:inherit;
+    font-size:12.5px;
+    font-weight:500;
+    color:var(--char);
+    background:var(--white);
+    border:1px solid var(--line);
+    border-radius:5px;
+    cursor:pointer;
+    transition:.15s;
+  }
+  .segmented button:hover{border-color:var(--muted);}
+  .segmented button[aria-pressed=true]{
+    background:var(--ink);
+    border-color:var(--ink);
+    color:var(--white);
+  }
+  .checks label{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    font-size:12.5px;
+    color:var(--char);
+    margin-bottom:9px;
+    cursor:pointer;
+  }
+  .checks input{accent-color:var(--orange);width:15px;height:15px;margin:0;}
+
+  .card{
+    background:var(--white);
+    border:1px solid var(--line);
+    border-radius:8px;
+    overflow:hidden;
+    margin-bottom:22px;
+  }
+  .card-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    padding:12px 16px;
+    border-bottom:1px solid var(--line);
+    background:var(--cream);
+  }
+  .card-head h3{
+    margin:0;
+    font-size:10.5px;
+    font-weight:600;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--muted);
+  }
+  .mailframe{padding:26px 24px;}
+  .mailmeta{
+    font-size:12px;
+    color:var(--muted);
+    border-bottom:1px solid var(--line);
+    padding-bottom:14px;
+    margin-bottom:20px;
+    line-height:1.7;
+  }
+  .mailbody{font-family:'Segoe UI',Arial,sans-serif;font-size:14px;color:#333;line-height:1.6;margin-bottom:26px;}
+
+  .btn{
+    font-family:inherit;
+    font-size:12.5px;
+    font-weight:600;
+    padding:8px 15px;
+    border-radius:5px;
+    border:1px solid var(--ink);
+    background:var(--ink);
+    color:var(--white);
+    cursor:pointer;
+    transition:.15s;
+    white-space:nowrap;
+  }
+  .btn:hover{background:#2b2b2b;}
+  .btn.ghost{background:transparent;color:var(--char);border-color:var(--line);}
+  .btn.ghost:hover{border-color:var(--muted);color:var(--ink);}
+  .btn.accent{background:var(--orange);border-color:var(--orange);}
+  .btn.accent:hover{background:#e07a1f;}
+  .btnrow{display:flex;gap:8px;}
+
+  pre{
+    margin:0;
+    padding:16px;
+    background:#2E2E2E;
+    color:#E4DED6;
+    font-family:ui-monospace,'SF Mono',Consolas,monospace;
+    font-size:11px;
+    line-height:1.6;
+    max-height:300px;
+    overflow:auto;
+    white-space:pre-wrap;
+    word-break:break-all;
+  }
+
+  details{border-top:1px solid var(--line);}
+  details summary{
+    padding:13px 16px;
+    font-size:12.5px;
+    font-weight:600;
+    cursor:pointer;
+    color:var(--char);
+    list-style:none;
+  }
+  details summary::-webkit-details-marker{display:none;}
+  details summary::before{content:"+ ";color:var(--orange);font-weight:700;}
+  details[open] summary::before{content:"− ";}
+  details .inner{padding:0 16px 18px;font-size:12.5px;line-height:1.65;color:var(--char);}
+  details .inner ol{margin:0 0 14px;padding-left:19px;}
+  details .inner li{margin-bottom:7px;}
+  details .inner strong{color:var(--ink);}
+  details .inner p{margin:0 0 12px;}
+
+  .toast{
+    position:fixed;
+    bottom:26px;
+    left:50%;
+    transform:translateX(-50%) translateY(90px);
+    background:var(--ink);
+    color:var(--white);
+    padding:11px 20px;
+    border-radius:6px;
+    font-size:13px;
+    font-weight:500;
+    transition:transform .28s cubic-bezier(.2,.8,.3,1);
+    z-index:50;
+  }
+  .toast.show{transform:translateX(-50%) translateY(0);}
+
+  .alert{
+    display:none;
+    font-size:11.5px;
+    line-height:1.6;
+    color:#8A4B00;
+    background:#FFF4E6;
+    border:1px solid #F8C88A;
+    border-radius:6px;
+    padding:11px 14px;
+    margin-bottom:22px;
+  }
+  .alert.show{display:block;}
+  .alert strong{color:#6B3A00;}
+
+  @media (max-width:900px){
+    .wrap{grid-template-columns:1fr;}
+    .panel{border-right:0;border-bottom:1px solid var(--line);}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;}}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Email Signature Builder</h1>
+  <p>Zip Kit Homes &amp; Mountain Valley Prefab — fill it in, copy it, paste it into Outlook.</p>
+</header>
+
+<div class="wrap">
+
+  <!-- ============ CONTROLS ============ -->
+  <div class="panel">
+
+    <div class="group">
+      <h2>Company</h2>
+      <div class="segmented" id="brandSeg">
+        <button type="button" data-brand="zipkit" aria-pressed="true">Zip Kit Homes</button>
+        <button type="button" data-brand="mvp" aria-pressed="false">Mountain Valley Prefab</button>
+      </div>
+      <p class="hint">Separate legal entities — one logo per signature, never both.</p>
+    </div>
+
+    <div class="group">
+      <h2>Person</h2>
+      <label><span>Full name</span><input type="text" id="fName" value="Kelsey Sackett"></label>
+      <label><span>Job title</span><input type="text" id="fTitle" value="Director of Sales Operations &amp; Creative"></label>
+      <label><span>Email</span><input type="text" id="fEmail" value="kelsey@zipkithomes.com"></label>
+    </div>
+
+    <div class="group">
+      <h2>Contact</h2>
+      <label><span>Office phone</span><input type="text" id="fOffice" value="435.586.1010"></label>
+      <label><span>Mobile</span><input type="text" id="fMobile" value="435.867.2204"></label>
+      <label><span>Location</span>
+        <select id="fLocation">
+          <option value="">None</option>
+          <option value="Cedar City, UT" selected>Cedar City, UT</option>
+          <option value="Idaho Falls, ID">Idaho Falls, ID</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="group">
+      <h2>Scheduling link</h2>
+      <label><span>Personal Bookings URL</span><input type="url" id="fBooking" value=""></label>
+      <p class="hint">Each person's own Bookings page. Grab it from Bookings → Booking page → Share.</p>
+      <label><span>Button label</span><input type="text" id="fCta" value="Schedule time with me"></label>
+      <div class="segmented" id="ctaSeg">
+        <button type="button" data-cta="solid" aria-pressed="true">Solid</button>
+        <button type="button" data-cta="outline" aria-pressed="false">Outlined</button>
+        <button type="button" data-cta="text" aria-pressed="false">Text only</button>
+      </div>
+    </div>
+
+    <div class="group">
+      <h2>Brand assets</h2>
+      <div class="row2">
+        <label><span>Logo URL</span><input type="url" id="fLogo" value=""></label>
+        <label><span>Width (px)</span><input type="number" id="fLogoW" value="120" min="60" max="260"></label>
+      </div>
+      <p class="hint">Set per brand automatically. Nudge the width if the logo looks heavy against the text.</p>
+      <label><span>Website</span><input type="text" id="fSite" value="zipkithomes.com"></label>
+    </div>
+
+    <div class="group">
+      <h2>Show</h2>
+      <div class="checks">
+        <label><input type="checkbox" id="cMobile" checked> Mobile number</label>
+        <label><input type="checkbox" id="cLocation" checked> Location</label>
+        <label><input type="checkbox" id="cSite" checked> Website</label>
+        <label><input type="checkbox" id="cDisclaimer"> Confidentiality line</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PREVIEW ============ -->
+  <div class="stage">
+
+    <div class="alert" id="logoAlert">
+      <strong>No logo URL.</strong> The signature will fall back to a text wordmark. Paste a public https link to the logo image.
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h3>Preview</h3>
+        <div class="btnrow">
+          <button class="btn accent" id="copyRich">Copy signature</button>
+        </div>
+      </div>
+      <div class="mailframe">
+        <div class="mailmeta">
+          <strong style="color:#585858;">To:</strong> builder@example.com<br>
+          <strong style="color:#585858;">Subject:</strong> Your Zip Kit quote
+        </div>
+        <div class="mailbody">Hi Dave,<br><br>Attached is the revised quote with the upgraded window package. Let me know if you'd like to walk through it.<br><br>Thanks,</div>
+        <div id="sigPreview"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h3>HTML source</h3>
+        <div class="btnrow">
+          <button class="btn ghost" id="copyCode">Copy code</button>
+          <button class="btn ghost" id="download">Download .html</button>
+        </div>
+      </div>
+      <pre id="codeOut"></pre>
+
+      <details>
+        <summary>How to install it</summary>
+        <div class="inner">
+          <p><strong>Outlook on the web / new Outlook</strong></p>
+          <ol>
+            <li>Click <strong>Copy signature</strong> above.</li>
+            <li>Settings → Mail → Compose and reply.</li>
+            <li>Click into the signature box and paste. Formatting carries over.</li>
+            <li>Set it for new messages <em>and</em> replies, then Save.</li>
+          </ol>
+          <p><strong>Outlook desktop (Windows)</strong></p>
+          <ol>
+            <li>File → Options → Mail → Signatures.</li>
+            <li>New, name it, click into the edit box and paste.</li>
+            <li>Assign to the right account under New messages and Replies/forwards.</li>
+          </ol>
+          <p><strong>Deploying to everyone at once</strong> — an Exchange transport rule can stamp a signature org-wide from the admin center, but it appends to the bottom of the whole thread rather than under each reply, and people can't see it while composing. For a team this size, sending each person their own copy is cleaner.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>Why it's built with tables</summary>
+        <div class="inner">
+          <p>Outlook on Windows renders email with the Word engine, not a browser engine. Flexbox, grid, and most modern CSS are ignored. Tables with inline styles are the only layout that survives it.</p>
+          <p>Other constraints baked into this output: fonts fall back to Segoe UI and Arial since Poppins won't load in a mail client unless the person has it installed locally; links carry explicit colors so Outlook doesn't turn them blue and underlined; the logo has fixed pixel dimensions so it doesn't reflow.</p>
+          <p><strong>Why the logo must be a hosted URL:</strong> base64-embedded images get stripped by Outlook and blocked by Gmail. The image has to live at a public address. If that address ever breaks, every signature you've already sent shows a broken image — so don't rename or move the file.</p>
+          <p><strong>Dark mode:</strong> some clients invert colors and the charcoal text can wash out. It's a known limitation of every HTML signature, not something worth engineering around — check it once in whatever your team actually uses.</p>
+        </div>
+      </details>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast">Copied</div>
+
+<script>
+const BRANDS = {
+  zipkit: {
+    name: 'Zip Kit Homes',
+    accent: '#F88828',
+    site: 'zipkithomes.com',
+    emailDomain: 'zipkithomes.com',
+    location: 'Cedar City, UT',
+    logo: 'https://zipkithomes.com/wp-content/uploads/2026/08/zipkithomes-social-logo.png',
+    logoWidth: 120
+  },
+  mvp: {
+    name: 'Mountain Valley Prefab',
+    accent: '#F88828',
+    site: 'mountainvalleyprefab.com',
+    emailDomain: 'mountainvalleyprefab.com',
+    location: 'Idaho Falls, ID',
+    logo: 'https://zipkithomes.com/wp-content/uploads/2026/08/Mvplogosocialgrey.png',
+    logoWidth: 165
+  }
+};
+
+let brand = 'zipkit';
+let ctaStyle = 'solid';
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/&(?!(amp|lt|gt|quot|#39);)/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const tel = s => String(s).replace(/[^0-9+]/g,'');
+
+const FONT = "'Poppins','Segoe UI',Arial,Helvetica,sans-serif";
+const INK = '#3D3D3D', CHAR = '#585858', MUTED = '#9A948E', LINE = '#E4DED6';
+
+function buildSignature(){
+  const b = BRANDS[brand];
+  const accent = b.accent;
+  const name = esc($('fName').value.trim());
+  const title = esc($('fTitle').value.trim());
+  const email = esc($('fEmail').value.trim());
+  const office = $('fOffice').value.trim();
+  const mobile = $('fMobile').value.trim();
+  const location = $('fLocation').value.trim();
+  const booking = $('fBooking').value.trim();
+  const ctaLabel = esc($('fCta').value.trim() || 'Schedule time with me');
+  const logo = $('fLogo').value.trim();
+  const logoW = parseInt($('fLogoW').value, 10) || b.logoWidth;
+  const site = esc($('fSite').value.trim());
+
+  const showMobile = $('cMobile').checked && mobile;
+  const showLoc = $('cLocation').checked && location;
+  const showSite = $('cSite').checked && site;
+  const showDisc = $('cDisclaimer').checked;
+
+  $('logoAlert').classList.toggle('show', !logo);
+
+  const link = (href, text, color, bold) =>
+    `<a href="${href}" style="color:${color};text-decoration:none;font-weight:${bold?600:400};">${text}</a>`;
+
+  // ---- identity block
+  let idBlock =
+    `<div style="font-family:${FONT};font-size:16px;font-weight:700;color:${INK};line-height:21px;mso-line-height-rule:exactly;">${name}</div>`;
+  if (title) idBlock +=
+    `<div style="font-family:${FONT};font-size:11.5px;font-weight:600;color:${accent};line-height:16px;mso-line-height-rule:exactly;padding-top:3px;">${title}</div>`;
+  idBlock +=
+    `<div style="font-family:${FONT};font-size:11.5px;color:${CHAR};line-height:16px;mso-line-height-rule:exactly;padding-top:1px;">${esc(b.name)}</div>`;
+
+  // ---- contact rows
+  let rows = '';
+  const sep = `<span style="color:${LINE};">&nbsp;&nbsp;|&nbsp;&nbsp;</span>`;
+  let phoneLine = '';
+  if (office) phoneLine += `<span style="color:${MUTED};">O</span>&nbsp;${link('tel:'+tel(office), esc(office), CHAR)}`;
+  if (showMobile) phoneLine += (phoneLine ? sep : '') + `<span style="color:${MUTED};">M</span>&nbsp;${link('tel:'+tel(mobile), esc(mobile), CHAR)}`;
+  if (phoneLine) rows += `<div style="font-family:${FONT};font-size:11.5px;color:${CHAR};line-height:19px;mso-line-height-rule:exactly;">${phoneLine}</div>`;
+  if (email) rows += `<div style="font-family:${FONT};font-size:11.5px;line-height:19px;mso-line-height-rule:exactly;">${link('mailto:'+email, email, CHAR)}</div>`;
+
+  let metaLine = '';
+  if (showSite) metaLine += link('https://'+site.replace(/^https?:\/\//,''), site, accent, true);
+  if (showLoc) metaLine += (metaLine ? sep : '') + `<span style="color:${MUTED};">${esc(location)}</span>`;
+  if (metaLine) rows += `<div style="font-family:${FONT};font-size:11.5px;line-height:19px;mso-line-height-rule:exactly;">${metaLine}</div>`;
+
+  // ---- scheduling CTA
+  let cta = '';
+  if (booking){
+    if (ctaStyle === 'solid'){
+      cta = `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;margin-top:14px;">`
+        + `<tr><td bgcolor="${accent}" style="background-color:${accent};border-radius:4px;padding:9px 17px;">`
+        + `<a href="${booking}" style="font-family:${FONT};font-size:11.5px;font-weight:600;color:#FFFFFF;text-decoration:none;display:inline-block;letter-spacing:.01em;">${ctaLabel}</a>`
+        + `</td></tr></table>`;
+    } else if (ctaStyle === 'outline'){
+      cta = `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;margin-top:14px;">`
+        + `<tr><td style="border:1px solid ${accent};border-radius:4px;padding:8px 16px;">`
+        + `<a href="${booking}" style="font-family:${FONT};font-size:11.5px;font-weight:600;color:${accent};text-decoration:none;display:inline-block;">${ctaLabel}</a>`
+        + `</td></tr></table>`;
+    } else {
+      cta = `<div style="font-family:${FONT};font-size:11.5px;line-height:19px;mso-line-height-rule:exactly;padding-top:10px;">`
+        + `<a href="${booking}" style="color:${accent};text-decoration:none;font-weight:600;">${ctaLabel} &rarr;</a></div>`;
+    }
+  }
+
+  // ---- logo cell
+  const logoCell = logo
+    ? `<img src="${logo}" width="${logoW}" alt="${esc(b.name)}" style="display:block;border:0;outline:none;width:${logoW}px;height:auto;">`
+    : `<div style="font-family:${FONT};font-size:13px;font-weight:700;color:${INK};line-height:18px;letter-spacing:.02em;width:${logoW}px;">${esc(b.name).replace(/ /g,'<br>')}</div>`;
+
+  const disclaimer = showDisc
+    ? `<tr><td colspan="2" style="padding-top:14px;">`
+      + `<div style="font-family:${FONT};font-size:9.5px;color:${MUTED};line-height:14px;mso-line-height-rule:exactly;max-width:470px;">`
+      + `This message and any attachments are intended only for the addressee and may contain confidential information. `
+      + `If you received it in error, please notify the sender and delete it.</div></td></tr>`
+    : '';
+
+  return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;font-family:${FONT};-webkit-text-size-adjust:100%;">
+<tr>
+<td style="padding:0 20px 0 0;vertical-align:top;">${logoCell}</td>
+<td style="padding:0 0 0 20px;vertical-align:top;border-left:1px solid ${LINE};">
+${idBlock}
+<div style="height:11px;line-height:11px;font-size:0;">&nbsp;</div>
+${rows}
+${cta}
+</td>
+</tr>
+${disclaimer}
+</table>`;
+}
+
+function render(){
+  const html = buildSignature();
+  $('sigPreview').innerHTML = html;
+  $('codeOut').textContent = html;
+}
+
+// ---- apply a brand's defaults
+function applyBrand(){
+  const b = BRANDS[brand];
+  $('fSite').value = b.site;
+  $('fLogo').value = b.logo;
+  $('fLogoW').value = b.logoWidth;
+  $('fLocation').value = b.location;
+  const em = $('fEmail').value;
+  $('fEmail').value = (em.includes('@') ? em.split('@')[0] : 'kelsey') + '@' + b.emailDomain;
+  render();
+}
+
+$('brandSeg').addEventListener('click', e => {
+  const btn = e.target.closest('button'); if(!btn) return;
+  brand = btn.dataset.brand;
+  [...$('brandSeg').children].forEach(b => b.setAttribute('aria-pressed', b === btn));
+  applyBrand();
+});
+
+$('ctaSeg').addEventListener('click', e => {
+  const btn = e.target.closest('button'); if(!btn) return;
+  ctaStyle = btn.dataset.cta;
+  [...$('ctaSeg').children].forEach(b => b.setAttribute('aria-pressed', b === btn));
+  render();
+});
+
+document.querySelectorAll('.panel input, .panel select').forEach(el => {
+  el.addEventListener('input', render);
+  el.addEventListener('change', render);
+});
+
+// ---- toast
+let toastTimer;
+function toast(msg){
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2100);
+}
+
+// ---- copy rendered signature (rich, pastes into Outlook with formatting)
+$('copyRich').addEventListener('click', async () => {
+  const html = buildSignature();
+  const plain = $('sigPreview').innerText;
+  try{
+    await navigator.clipboard.write([new ClipboardItem({
+      'text/html': new Blob([html], {type:'text/html'}),
+      'text/plain': new Blob([plain], {type:'text/plain'})
+    })]);
+    toast('Signature copied — paste into Outlook');
+  }catch(err){
+    const range = document.createRange();
+    range.selectNodeContents($('sigPreview'));
+    const sel = window.getSelection();
+    sel.removeAllRanges(); sel.addRange(range);
+    const ok = document.execCommand('copy');
+    sel.removeAllRanges();
+    toast(ok ? 'Signature copied — paste into Outlook' : 'Copy blocked — select the preview and press Ctrl+C');
+  }
+});
+
+$('copyCode').addEventListener('click', async () => {
+  try{
+    await navigator.clipboard.writeText(buildSignature());
+    toast('HTML copied');
+  }catch(err){
+    toast('Copy blocked — select the code and press Ctrl+C');
+  }
+});
+
+$('download').addEventListener('click', () => {
+  const name = ($('fName').value.trim() || 'signature').toLowerCase().replace(/[^a-z0-9]+/g,'-');
+  const blob = new Blob([buildSignature()], {type:'text/html'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name + '-signature.html';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast('Downloaded');
+});
+
+applyBrand();
+</script>
+</body>
+</html>
