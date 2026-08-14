@@ -366,15 +366,7 @@
         </div>
       </details>
 
-      <details>
-        <summary>Why it's built with tables</summary>
-        <div class="inner">
-          <p>Outlook on Windows renders email with the Word engine, not a browser engine. Flexbox, grid, and most modern CSS are ignored. Tables with inline styles are the only layout that survives it.</p>
-          <p>Other constraints baked into this output: fonts fall back to Segoe UI and Arial since Poppins won't load in a mail client unless the person has it installed locally; links carry explicit colors so Outlook doesn't turn them blue and underlined; the logo has fixed pixel dimensions so it doesn't reflow.</p>
-          <p><strong>Why the logo must be a hosted URL:</strong> base64-embedded images get stripped by Outlook and blocked by Gmail. The image has to live at a public address. If that address ever breaks, every signature you've already sent shows a broken image — so don't rename or move the file.</p>
-          <p><strong>Dark mode:</strong> some clients invert colors and the charcoal text can wash out. It's a known limitation of every HTML signature, not something worth engineering around — check it once in whatever your team actually uses.</p>
-        </div>
-      </details>
+     
     </div>
 
   </div>
