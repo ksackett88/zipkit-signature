@@ -311,6 +311,17 @@
     </div>
 
     <div class="group">
+      <h2>Divider</h2>
+      <div class="checks">
+        <label><input type="checkbox" id="cRule" checked> <span>Line above the signature<small>Separates it from the message body.</small></span></label>
+      </div>
+      <div class="row2">
+        <label><span>Rule width (px)</span><input type="number" id="fRuleW" value="520" min="200" max="700" step="10"></label>
+        <label><span>Gap below</span><input type="number" id="fRuleGap" value="18" min="6" max="40"></label>
+      </div>
+    </div>
+
+    <div class="group">
       <h2>Brand assets</h2>
       <div class="row2">
         <label><span>Logo URL</span><input type="url" id="fLogo" value=""></label>
@@ -398,13 +409,13 @@
       </details>
 
       <details>
-        <summary>The dark mode problem, and what these two toggles do</summary>
+        <summary>The dark mode problem, and what those two toggles do</summary>
         <div class="inner">
-          <p>Outlook's dark mode recolors plain text so it stays readable against a dark background — charcoal becomes white, and your orange job title gets swept up with it. It leaves link colors alone, which is why the website stays orange while the title doesn't.</p>
-          <p><strong>Protect the title color</strong> wraps the job title in an anchor tag pointing at the company website. Outlook then treats it as a link and keeps the orange. In light mode it looks identical to before — the underline is suppressed and it isn't obviously clickable.</p>
-          <p><strong>White card background</strong> sets an explicit light background behind the whole signature. Most clients respect an explicit background and skip inverting what sits on top of it, so the logo and all text render as designed. The trade-off is a white panel sitting in a dark email. Some companies do this deliberately; others find it jarring.</p>
-          <p>Dark mode handling differs between Outlook desktop, new Outlook, the web app, and mobile. Test in whichever your team actually uses before rolling it out — the preview toggle above approximates it but can't perfectly reproduce any one client.</p>
-          <p><strong>The logo is the harder half.</strong> Both marks are charcoal line art, which nearly disappears on a dark background. The white card fixes it. The alternative is a second logo version with a lighter outline, swapped in per person — more work than it's worth for most teams.</p>
+          <p>Outlook's dark mode recolors plain text so it stays readable against a dark background — charcoal becomes white, and the orange job title gets swept up with it. It leaves link colors alone, which is why the website stays orange while the title doesn't.</p>
+          <p><strong>Protect the title color</strong> wraps the job title in an anchor tag pointing at the company website. Outlook then treats it as a link and keeps the orange. In light mode it looks identical — the underline is suppressed and it isn't obviously clickable.</p>
+          <p><strong>White card background</strong> sets an explicit light background behind the whole signature. Most clients respect an explicit background and skip inverting what sits on top of it, so the logo and all text render as designed. The trade-off is a white panel sitting in a dark email.</p>
+          <p>Dark mode handling differs between Outlook desktop, new Outlook, the web app, and mobile. Test in whichever your team actually uses — the preview toggle approximates it but can't perfectly reproduce any one client.</p>
+          <p><strong>The logo is the harder half.</strong> Both marks are charcoal line art, which nearly disappears on a dark background. Only the white card fixes that.</p>
         </div>
       </details>
 
@@ -412,7 +423,8 @@
         <summary>Why it's built with tables</summary>
         <div class="inner">
           <p>Outlook on Windows renders email with the Word engine, not a browser engine. Flexbox, grid, and most modern CSS are ignored. Tables with inline styles are the only layout that survives it.</p>
-          <p>Fonts fall back to Segoe UI and Arial since Poppins won't load in a mail client unless the person has it installed locally. Links carry explicit colors so Outlook doesn't turn them blue. The logo has fixed pixel dimensions so it doesn't reflow.</p>
+          <p>The divider rule is a one-pixel-tall table cell with a background color rather than an <code>&lt;hr&gt;</code> or a CSS border — those render inconsistently across clients, and a filled cell always shows up.</p>
+          <p>Fonts fall back to Segoe UI and Arial since Poppins won't load in a mail client unless the person has it installed locally. Links carry explicit colors so Outlook doesn't turn them blue.</p>
           <p><strong>Why the logo must be a hosted URL:</strong> base64-embedded images get stripped by Outlook and blocked by Gmail. If that address ever breaks, every signature you've already sent shows a broken image — so don't rename or move the file.</p>
         </div>
       </details>
@@ -471,6 +483,8 @@ function buildSignature(){
   const logoW = parseInt($('fLogoW').value, 10) || b.logoWidth;
   const site = esc($('fSite').value.trim());
   const siteUrl = 'https://' + site.replace(/^https?:\/\//,'');
+  const ruleW = parseInt($('fRuleW').value, 10) || 520;
+  const ruleGap = parseInt($('fRuleGap').value, 10) || 18;
 
   const showMobile = $('cMobile').checked && mobile;
   const showLoc = $('cLocation').checked && location;
@@ -478,6 +492,7 @@ function buildSignature(){
   const showDisc = $('cDisclaimer').checked;
   const useAnchor = $('cAnchor').checked;
   const useCard = $('cCard').checked;
+  const useRule = $('cRule').checked;
 
   $('logoAlert').classList.toggle('show', !logo);
 
@@ -488,7 +503,6 @@ function buildSignature(){
   let idBlock =
     `<div style="font-family:${FONT};font-size:16px;font-weight:700;color:${INK};line-height:21px;mso-line-height-rule:exactly;">${name}</div>`;
   if (title){
-    // Anchor-wrapping keeps Outlook dark mode from recoloring the accent.
     const titleInner = useAnchor
       ? `<a href="${siteUrl}" style="color:${accent};text-decoration:none;font-weight:600;">${title}</a>`
       : title;
@@ -542,7 +556,7 @@ function buildSignature(){
       + `If you received it in error, please notify the sender and delete it.</div></td></tr>`
     : '';
 
-  const core = `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;font-family:${FONT};-webkit-text-size-adjust:100%;">
+  let out = `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;font-family:${FONT};-webkit-text-size-adjust:100%;">
 <tr>
 <td style="padding:0 20px 0 0;vertical-align:top;">${logoCell}</td>
 <td style="padding:0 0 0 20px;vertical-align:top;border-left:1px solid ${LINE};">
@@ -555,13 +569,26 @@ ${cta}
 ${disclaimer}
 </table>`;
 
-  if (!useCard) return core;
-
-  return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" bgcolor="#FFFFFF" style="background-color:#FFFFFF;border-collapse:collapse;color-scheme:light;">
+  // ---- optional white card
+  if (useCard){
+    out = `<table role="presentation" cellpadding="0" cellspacing="0" border="0" bgcolor="#FFFFFF" style="background-color:#FFFFFF;border-collapse:collapse;color-scheme:light;">
 <tr><td bgcolor="#FFFFFF" style="background-color:#FFFFFF;padding:18px 22px;border-radius:6px;">
-${core}
+${out}
 </td></tr>
 </table>`;
+  }
+
+  // ---- optional divider rule above
+  if (useRule){
+    out = `<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="${ruleW}" style="width:${ruleW}px;border-collapse:collapse;">
+<tr><td height="1" bgcolor="${LINE}" style="height:1px;line-height:1px;font-size:0;background-color:${LINE};mso-line-height-rule:exactly;">&nbsp;</td></tr>
+<tr><td style="padding-top:${ruleGap}px;">
+${out}
+</td></tr>
+</table>`;
+  }
+
+  return out;
 }
 
 function render(){
