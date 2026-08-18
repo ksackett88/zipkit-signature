@@ -105,14 +105,16 @@
   }
   .checks label{
     display:flex;
-    align-items:center;
+    align-items:flex-start;
     gap:9px;
     font-size:12.5px;
     color:var(--char);
-    margin-bottom:9px;
+    margin-bottom:11px;
     cursor:pointer;
+    line-height:1.45;
   }
-  .checks input{accent-color:var(--orange);width:15px;height:15px;margin:0;}
+  .checks input{accent-color:var(--orange);width:15px;height:15px;margin:2px 0 0;flex:none;}
+  .checks small{display:block;color:var(--muted);font-size:11px;margin-top:2px;}
 
   .card{
     background:var(--white);
@@ -138,7 +140,22 @@
     text-transform:uppercase;
     color:var(--muted);
   }
-  .mailframe{padding:26px 24px;}
+  .modeseg{display:flex;gap:5px;}
+  .modeseg button{
+    padding:5px 11px;
+    font-family:inherit;
+    font-size:11px;
+    font-weight:600;
+    border:1px solid var(--line);
+    background:var(--white);
+    color:var(--char);
+    border-radius:4px;
+    cursor:pointer;
+  }
+  .modeseg button[aria-pressed=true]{background:var(--ink);border-color:var(--ink);color:var(--white);}
+
+  .mailframe{padding:26px 24px;transition:background .2s;}
+  .mailframe.dark{background:#1F1F1F;}
   .mailmeta{
     font-size:12px;
     color:var(--muted);
@@ -147,7 +164,9 @@
     margin-bottom:20px;
     line-height:1.7;
   }
+  .mailframe.dark .mailmeta{border-color:#3A3A3A;color:#8E8E8E;}
   .mailbody{font-family:'Segoe UI',Arial,sans-serif;font-size:14px;color:#333;line-height:1.6;margin-bottom:26px;}
+  .mailframe.dark .mailbody{color:#D8D8D8;}
 
   .btn{
     font-family:inherit;
@@ -167,7 +186,7 @@
   .btn.ghost:hover{border-color:var(--muted);color:var(--ink);}
   .btn.accent{background:var(--orange);border-color:var(--orange);}
   .btn.accent:hover{background:#e07a1f;}
-  .btnrow{display:flex;gap:8px;}
+  .btnrow{display:flex;gap:8px;align-items:center;}
 
   pre{
     margin:0;
@@ -302,6 +321,14 @@
     </div>
 
     <div class="group">
+      <h2>Dark mode</h2>
+      <div class="checks">
+        <label><input type="checkbox" id="cAnchor" checked> <span>Protect the title color<small>Wraps the job title in a link tag so Outlook can't recolor it. Invisible in light mode.</small></span></label>
+        <label><input type="checkbox" id="cCard"> <span>White card background<small>Forces a light panel so the logo and text render the same everywhere.</small></span></label>
+      </div>
+    </div>
+
+    <div class="group">
       <h2>Show</h2>
       <div class="checks">
         <label><input type="checkbox" id="cMobile" checked> Mobile number</label>
@@ -323,13 +350,17 @@
       <div class="card-head">
         <h3>Preview</h3>
         <div class="btnrow">
+          <div class="modeseg" id="modeSeg">
+            <button type="button" data-mode="light" aria-pressed="true">Light</button>
+            <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+          </div>
           <button class="btn accent" id="copyRich">Copy signature</button>
         </div>
       </div>
-      <div class="mailframe">
+      <div class="mailframe" id="mailframe">
         <div class="mailmeta">
-          <strong style="color:#585858;">To:</strong> builder@example.com<br>
-          <strong style="color:#585858;">Subject:</strong> Your Zip Kit quote
+          <strong>To:</strong> builder@example.com<br>
+          <strong>Subject:</strong> Your Zip Kit quote
         </div>
         <div class="mailbody">Hi Dave,<br><br>Attached is the revised quote with the upgraded window package. Let me know if you'd like to walk through it.<br><br>Thanks,</div>
         <div id="sigPreview"></div>
@@ -349,17 +380,42 @@
       <details>
         <summary>How to install it</summary>
         <div class="inner">
-          
-          <p><strong>Outlook</strong></p>
+          <p><strong>Outlook on the web / new Outlook</strong></p>
+          <ol>
+            <li>Click <strong>Copy signature</strong> above.</li>
+            <li>Settings → Mail → Compose and reply.</li>
+            <li>Click into the signature box and paste. Formatting carries over.</li>
+            <li>Set it for new messages <em>and</em> replies, then Save.</li>
+          </ol>
+          <p><strong>Outlook desktop (Windows)</strong></p>
           <ol>
             <li>File → Options → Mail → Signatures.</li>
             <li>New, name it, click into the edit box and paste.</li>
             <li>Assign to the right account under New messages and Replies/forwards.</li>
           </ol>
+          <p><strong>Deploying to everyone at once</strong> — an Exchange transport rule can stamp a signature org-wide from the admin center, but it appends to the bottom of the whole thread rather than under each reply, and people can't see it while composing. For a team this size, sending each person their own copy is cleaner.</p>
         </div>
       </details>
 
-     
+      <details>
+        <summary>The dark mode problem, and what these two toggles do</summary>
+        <div class="inner">
+          <p>Outlook's dark mode recolors plain text so it stays readable against a dark background — charcoal becomes white, and your orange job title gets swept up with it. It leaves link colors alone, which is why the website stays orange while the title doesn't.</p>
+          <p><strong>Protect the title color</strong> wraps the job title in an anchor tag pointing at the company website. Outlook then treats it as a link and keeps the orange. In light mode it looks identical to before — the underline is suppressed and it isn't obviously clickable.</p>
+          <p><strong>White card background</strong> sets an explicit light background behind the whole signature. Most clients respect an explicit background and skip inverting what sits on top of it, so the logo and all text render as designed. The trade-off is a white panel sitting in a dark email. Some companies do this deliberately; others find it jarring.</p>
+          <p>Dark mode handling differs between Outlook desktop, new Outlook, the web app, and mobile. Test in whichever your team actually uses before rolling it out — the preview toggle above approximates it but can't perfectly reproduce any one client.</p>
+          <p><strong>The logo is the harder half.</strong> Both marks are charcoal line art, which nearly disappears on a dark background. The white card fixes it. The alternative is a second logo version with a lighter outline, swapped in per person — more work than it's worth for most teams.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>Why it's built with tables</summary>
+        <div class="inner">
+          <p>Outlook on Windows renders email with the Word engine, not a browser engine. Flexbox, grid, and most modern CSS are ignored. Tables with inline styles are the only layout that survives it.</p>
+          <p>Fonts fall back to Segoe UI and Arial since Poppins won't load in a mail client unless the person has it installed locally. Links carry explicit colors so Outlook doesn't turn them blue. The logo has fixed pixel dimensions so it doesn't reflow.</p>
+          <p><strong>Why the logo must be a hosted URL:</strong> base64-embedded images get stripped by Outlook and blocked by Gmail. If that address ever breaks, every signature you've already sent shows a broken image — so don't rename or move the file.</p>
+        </div>
+      </details>
     </div>
 
   </div>
@@ -391,6 +447,7 @@ const BRANDS = {
 
 let brand = 'zipkit';
 let ctaStyle = 'solid';
+let previewMode = 'light';
 
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/&(?!(amp|lt|gt|quot|#39);)/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -413,11 +470,14 @@ function buildSignature(){
   const logo = $('fLogo').value.trim();
   const logoW = parseInt($('fLogoW').value, 10) || b.logoWidth;
   const site = esc($('fSite').value.trim());
+  const siteUrl = 'https://' + site.replace(/^https?:\/\//,'');
 
   const showMobile = $('cMobile').checked && mobile;
   const showLoc = $('cLocation').checked && location;
   const showSite = $('cSite').checked && site;
   const showDisc = $('cDisclaimer').checked;
+  const useAnchor = $('cAnchor').checked;
+  const useCard = $('cCard').checked;
 
   $('logoAlert').classList.toggle('show', !logo);
 
@@ -427,8 +487,13 @@ function buildSignature(){
   // ---- identity block
   let idBlock =
     `<div style="font-family:${FONT};font-size:16px;font-weight:700;color:${INK};line-height:21px;mso-line-height-rule:exactly;">${name}</div>`;
-  if (title) idBlock +=
-    `<div style="font-family:${FONT};font-size:11.5px;font-weight:600;color:${accent};line-height:16px;mso-line-height-rule:exactly;padding-top:3px;">${title}</div>`;
+  if (title){
+    // Anchor-wrapping keeps Outlook dark mode from recoloring the accent.
+    const titleInner = useAnchor
+      ? `<a href="${siteUrl}" style="color:${accent};text-decoration:none;font-weight:600;">${title}</a>`
+      : title;
+    idBlock += `<div style="font-family:${FONT};font-size:11.5px;font-weight:600;color:${accent};line-height:16px;mso-line-height-rule:exactly;padding-top:3px;">${titleInner}</div>`;
+  }
   idBlock +=
     `<div style="font-family:${FONT};font-size:11.5px;color:${CHAR};line-height:16px;mso-line-height-rule:exactly;padding-top:1px;">${esc(b.name)}</div>`;
 
@@ -442,7 +507,7 @@ function buildSignature(){
   if (email) rows += `<div style="font-family:${FONT};font-size:11.5px;line-height:19px;mso-line-height-rule:exactly;">${link('mailto:'+email, email, CHAR)}</div>`;
 
   let metaLine = '';
-  if (showSite) metaLine += link('https://'+site.replace(/^https?:\/\//,''), site, accent, true);
+  if (showSite) metaLine += link(siteUrl, site, accent, true);
   if (showLoc) metaLine += (metaLine ? sep : '') + `<span style="color:${MUTED};">${esc(location)}</span>`;
   if (metaLine) rows += `<div style="font-family:${FONT};font-size:11.5px;line-height:19px;mso-line-height-rule:exactly;">${metaLine}</div>`;
 
@@ -477,7 +542,7 @@ function buildSignature(){
       + `If you received it in error, please notify the sender and delete it.</div></td></tr>`
     : '';
 
-  return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;font-family:${FONT};-webkit-text-size-adjust:100%;">
+  const core = `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;font-family:${FONT};-webkit-text-size-adjust:100%;">
 <tr>
 <td style="padding:0 20px 0 0;vertical-align:top;">${logoCell}</td>
 <td style="padding:0 0 0 20px;vertical-align:top;border-left:1px solid ${LINE};">
@@ -489,6 +554,14 @@ ${cta}
 </tr>
 ${disclaimer}
 </table>`;
+
+  if (!useCard) return core;
+
+  return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" bgcolor="#FFFFFF" style="background-color:#FFFFFF;border-collapse:collapse;color-scheme:light;">
+<tr><td bgcolor="#FFFFFF" style="background-color:#FFFFFF;padding:18px 22px;border-radius:6px;">
+${core}
+</td></tr>
+</table>`;
 }
 
 function render(){
@@ -497,7 +570,6 @@ function render(){
   $('codeOut').textContent = html;
 }
 
-// ---- apply a brand's defaults
 function applyBrand(){
   const b = BRANDS[brand];
   $('fSite').value = b.site;
@@ -523,12 +595,18 @@ $('ctaSeg').addEventListener('click', e => {
   render();
 });
 
+$('modeSeg').addEventListener('click', e => {
+  const btn = e.target.closest('button'); if(!btn) return;
+  previewMode = btn.dataset.mode;
+  [...$('modeSeg').children].forEach(b => b.setAttribute('aria-pressed', b === btn));
+  $('mailframe').classList.toggle('dark', previewMode === 'dark');
+});
+
 document.querySelectorAll('.panel input, .panel select').forEach(el => {
   el.addEventListener('input', render);
   el.addEventListener('change', render);
 });
 
-// ---- toast
 let toastTimer;
 function toast(msg){
   const t = $('toast');
@@ -538,7 +616,6 @@ function toast(msg){
   toastTimer = setTimeout(() => t.classList.remove('show'), 2100);
 }
 
-// ---- copy rendered signature (rich, pastes into Outlook with formatting)
 $('copyRich').addEventListener('click', async () => {
   const html = buildSignature();
   const plain = $('sigPreview').innerText;
